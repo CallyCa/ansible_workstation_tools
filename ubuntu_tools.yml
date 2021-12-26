@@ -34,6 +34,16 @@
           - snapd
 
     - block:
+      - name: Installing nodeJS
+        shell: 
+          cmd: 'curl -sL https://deb.nodesource.com/setup_14.15.10 | sudo -E bash -'
+          warn: false
+      - name: Installing npm
+        become: true
+        apt:
+          name: nodejs
+
+    - block:
       - name: Verify if Oh-My-zsh is installed
         command: test -d /home/{{ ansible_user_id }}/.oh-my-zsh
         register: ohmyzsh
