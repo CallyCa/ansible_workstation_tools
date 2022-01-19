@@ -395,3 +395,31 @@
         become: true
         apt:
           name: winehq-stable
+          
+    - block:
+      - name: Install Jenkins Key
+        become: true
+        apt_key:
+          url: 'https://pkg.jenkins.io/debian-stable/jenkins.io.key'
+          state: present
+      - name: Add Jenkins sourcelist
+        become: true
+        shell: 
+          cmd: 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+          warn: false
+      - name: Updating repositories
+        become: true
+        apt:
+          update_cache: yes
+      - name: Installing Jenkins
+        become: true
+        apt:
+          name: jenkins
+      - name: Starting Jenkins service
+        become: true
+        command: 'systemctl start jenkins'      
+      - name: Allowing Jenkins on the port 8080
+        become: true
+        shell: 
+          cmd: 'ufw allow 8080 && ufw enable'
+          warn: false
