@@ -32,6 +32,7 @@
           - jq
           - mtr
           - snapd
+          - flatpak
 
     - block:
       - name: Installing nodeJS
@@ -90,12 +91,7 @@
           repo: 'https://github.com/dracula/{{ item }}'
           dest: /home/{{ ansible_user_id }}/{{ item }}
         with_items:
-            - gnome-terminal
-      - name: Installing Dracula terminal
-        shell: 
-            cmd: './home/{{ ansible_user_id }}/gnome-terminal/install.sh'
-            warn: false
-
+            - gnome-terminal 
     - name: Installing AWS CLI via pip3
       become: true
       pip:
@@ -118,6 +114,7 @@
             - obs-studio
             - vlc
             - discord
+            - barrier
 
       - name: Snap install packages with tag classic
         become: true
@@ -133,13 +130,17 @@
       - name: Adding Teamviewer Repository
         become: true
         shell: 
-          cmd: '"echo "deb http://linux.teamviewer.com/deb stable main" >> /etc/apt/sources.list.d/teamviewer.list"'
+          cmd: 'echo "deb http://linux.teamviewer.com/deb stable main" >> /etc/apt/sources.list.d/teamviewer.list'
           warn: false      
       - name: Install Teamviewer Key
         become: true
         apt_key: 
           url: 'https://download.teamviewer.com/download/linux/signature/TeamViewer2017.asc'
           state: present
+      - name: Updating repositories
+        become: true
+        apt:
+         update_cache: yes
       - name: Installing Teamviewer
         become: true
         apt:
@@ -153,22 +154,25 @@
           state: present
       - name: Install Google Repository
         become: true
-        apt_repository:
-          repo: 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main'
-          state: present
-          filename: google-chrome
+        shell: 
+          cmd: 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+          warn: false      
+      - name: Updating repositories
+        become: true
+        apt:
+         update_cache: yes          
       - name: Install Google Chrome
         become: true
         apt:
           name: google-chrome-stable
 
-    - block:
-      - name: Installing Vagrant 2.2.18
-        become: true
-        unarchive:
-          src: 'https://releases.hashicorp.com/vagrant/2.2.18/vagrant_2.2.18_linux_amd64.zip'
-          dest: /usr/local/bin
-          remote_src: yes
+    # - block:
+    #   - name: Installing Vagrant 2.2.18
+    #     become: true
+    #     unarchive:
+    #       src: 'https://releases.hashicorp.com/vagrant/2.2.18/vagrant_2.2.18_linux_amd64.zip'
+    #       dest: /usr/local/bin
+    #       remote_src: yes
 
     - block:
       - name: Installing Terraform 0.12.31
@@ -330,15 +334,7 @@
         with_items:
           - kubectx
           - kubens  
-      - name: Creating ZSH Completion  
-        file:
-          src: '/opt/kubectx/completion/{{ item }}'
-          dest: '/home/{{ ansible_user_id }}/.oh-my-zsh/completions/_{{ item }}'
-          state: link
-        with_items:
-          - kubectx.zsh
-          - kubens.zsh 
-          
+    
     - block:
       - name: Adding Longsleep/Golang Backports Repository
         become: true
@@ -362,51 +358,56 @@
 
 # Optional installation
 
-    - block: 
-      - name: Enable the 32-bit architecture to wine
-        become: true
-        shell:
-          cmd: 'dpkg --add-architecture i386' 
-          warn: false
-      - name: Importing WineHQ repositorys GPG key
-        become: true
-        apt_key:
-          url: 'https://dl.winehq.org/wine-builds/winehq.key'
-          state: present      
-      - name: Adding WineHQ repository
-        become: true
-        apt_repository:
-          repo: '"deb http://dl.winehq.org/wine-builds/ubuntu/ $(lsb_release -cs) main"'
-          state: present
-      - name: Installing wine
-        become: true
-        apt:
-          name: winehq-stable
+    # - block: 
+    #   - name: Enable the 32-bit architecture to wine
+    #     become: true
+    #     shell:
+    #       cmd: 'dpkg --add-architecture i386' 
+    #       warn: false
+    #   - name: Importing WineHQ repositorys GPG key
+    #     become: true
+    #     apt_key:
+    #       url: 'https://dl.winehq.org/wine-builds/winehq.key'
+    #       state: present      
+    #   - name: Adding WineHQ repository
+    #     become: true
+    #     apt_repository:
+    #       repo: '"deb http://dl.winehq.org/wine-builds/ubuntu/ $(lsb_release -cs) main"'
+    #       state: present
+    #   - name: Installing wine
+    #     become: true
+    #     apt:
+    #       name: winehq-stable
           
-    - block:
-      - name: Install Jenkins Key
-        become: true
-        apt_key:
-          url: 'https://pkg.jenkins.io/debian-stable/jenkins.io.key'
-          state: present
-      - name: Add Jenkins sourcelist
-        become: true
-        shell: 
-          cmd: 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
-          warn: false
-      - name: Updating repositories
-        become: true
-        apt:
-          update_cache: yes
-      - name: Installing Jenkins
-        become: true
-        apt:
-          name: jenkins
-      - name: Starting Jenkins service
-        become: true
-        command: 'systemctl start jenkins'      
-      - name: Allowing Jenkins on the port 8080
-        become: true
-        shell: 
-          cmd: 'ufw allow 8080 && ufw enable'
-          warn: false
+  #  - block:
+  #    - name: Install Jenkins Key
+  #      become: true
+  #      apt_key:
+  #        url: 'https://pkg.jenkins.io/debian-stable/jenkins.io.key'
+  #        state: present
+  #    - name: Add Jenkins sourcelist
+  #      become: true
+  #      shell: 
+  #        cmd: 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+  #        warn: false
+  #    - name: Updating repositories
+  #      become: true
+  #      apt:
+  #        update_cache: yes
+  #    - name: Installing Jenkins
+  #      become: true
+  #      apt:
+  #        name: jenkins
+  #    - name: Starting Jenkins service
+  #      become: true
+  #      command: 'systemctl start jenkins'      
+  #    - name: Allowing Jenkins on the port 8080
+  #      become: true
+  #      shell: 
+  #        cmd: 'ufw allow 8080 && ufw enable'
+  #        warn: false
+  #     - name: Install Flatpak
+  #       become: true
+  #       apt:
+  #         name: flatpak
+
