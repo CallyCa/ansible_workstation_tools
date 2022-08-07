@@ -99,32 +99,92 @@
         executable: pip3
     
     - block:
-      - name: Snap install packages without tag
+      - name: flathub flatpak repo
         become: true
-        snap: 
-            name: '{{ item }}'
-        loop:
-            - bpytop  
-            - figma-linux  
-            - gimp
-            - notion-snap
-            - postman
-            - mailspring
-            - teams
-            - obs-studio
-            - vlc
-            - discord
-            - barrier
+        community.general.flatpak_remote:
+          name: flathub
+          state: present
+          flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+          method: system
 
-      - name: Snap install packages with tag classic
+      - name: Flatpak install package Figma
+        community.general.flatpak:
+          name: io.github.Figma_Linux.figma_linux
+          state: present
+
+      - name: Flatpak install packages Gimp
+        community.general.flatpak:
+          name: org.gimp.GIMP
+          state: present      
+          
+      - name: Flatpak install package Postman
+        community.general.flatpak:
+          name: com.getpostman.Postman
+          state: present      
+
+      - name: Flatpak install package Insomnia
+        community.general.flatpak:
+          name: rest.insomnia.Insomnia
+          state: present      
+      
+      - name: Flatpak install package Mailspring
+        community.general.flatpak:
+          name: com.getmailspring.Mailspring
+          state: present      
+          
+      - name: Flatpak install package Teams
+        community.general.flatpak:
+          name: com.microsoft.Teams
+          state: present
+
+      - name: Flatpak install package Obs-Studio
+        community.general.flatpak:
+          name: com.obsproject.Studio
+          state: present      
+          
+      - name: Flatpak install package VLC
+        community.general.flatpak:
+          name: org.videolan.VLC
+          state: present      
+
+      - name: Flatpak install package DataGrip
+        community.general.flatpak:
+          name: com.jetbrains.DataGrip
+          state: present       
+
+      - name: Flatpak install package Android-Studio
+        community.general.flatpak:
+          name: com.google.AndroidStudio
+          state: present       
+      
+      - name: Flatpak install package VScode
+        community.general.flatpak:
+          name: com.visualstudio.code
+          state: present         
+          
+      - name: Flatpak install package Slack
+        community.general.flatpak:
+          name: com.slack.Slack
+          state: present         
+          
+      - name: Flatpak install package IntelliJ-Ultimate
+        community.general.flatpak:
+          name: com.jetbrains.IntelliJ-IDEA-Ultimate
+          state: present        
+          
+      - name: Flatpak install package Edge
+        community.general.flatpak:
+          name: com.microsoft.Edge
+          state: present        
+    
+    - block:
+      - name: Snap install packages with tag
         become: true
         snap: 
             name: '{{ item }}'
-            classic: yes
         loop:
-            - datagrip
-            - android-studio
-            - code
+            - barrier
+            - notion-snap
 
     - block: 
       - name: Adding Teamviewer Repository
@@ -166,13 +226,13 @@
         apt:
           name: google-chrome-stable
 
-    # - block:
-    #   - name: Installing Vagrant 2.2.18
-    #     become: true
-    #     unarchive:
-    #       src: 'https://releases.hashicorp.com/vagrant/2.2.18/vagrant_2.2.18_linux_amd64.zip'
-    #       dest: /usr/local/bin
-    #       remote_src: yes
+    - block:
+      - name: Installing Vagrant 2.2.18
+        become: true
+        unarchive:
+          src: 'https://releases.hashicorp.com/vagrant/2.2.18/vagrant_2.2.18_linux_amd64.zip'
+          dest: /usr/local/bin
+          remote_src: yes
 
     - block:
       - name: Installing Terraform 0.12.31
@@ -406,8 +466,3 @@
   #      shell: 
   #        cmd: 'ufw allow 8080 && ufw enable'
   #        warn: false
-  #     - name: Install Flatpak
-  #       become: true
-  #       apt:
-  #         name: flatpak
-
