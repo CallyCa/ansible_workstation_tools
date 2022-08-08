@@ -33,6 +33,18 @@
           - mtr
           - snapd
           - flatpak
+          - autoconf 
+          - bison 
+          - build-essential 
+          - libssl-dev 
+          - libyaml-dev 
+          - libreadline6-dev 
+          - zlib1g-dev 
+          - libncurses5-dev 
+          - libffi-dev 
+          - libgdbm6 
+          - libgdbm-dev 
+          - libdb-dev
 
     - block:
       - name: Installing nodeJS
@@ -99,6 +111,12 @@
         executable: pip3
     
     - block:
+      - name: Installing Homebrew
+        shell: 
+          cmd: 'curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh'
+          warn: false       
+
+    - block:
       - name: flathub flatpak repo
         become: true
         community.general.flatpak_remote:
@@ -117,16 +135,6 @@
           name: org.gimp.GIMP
           state: present      
           
-      - name: Flatpak install package Postman
-        community.general.flatpak:
-          name: com.getpostman.Postman
-          state: present      
-
-      - name: Flatpak install package Insomnia
-        community.general.flatpak:
-          name: rest.insomnia.Insomnia
-          state: present      
-      
       - name: Flatpak install package Mailspring
         community.general.flatpak:
           name: com.getmailspring.Mailspring
@@ -157,11 +165,6 @@
           name: com.google.AndroidStudio
           state: present       
       
-      - name: Flatpak install package VScode
-        community.general.flatpak:
-          name: com.visualstudio.code
-          state: present         
-          
       - name: Flatpak install package Slack
         community.general.flatpak:
           name: com.slack.Slack
@@ -185,6 +188,17 @@
         loop:
             - barrier
             - notion-snap
+            - postman
+            - bpytop
+
+      - name: Snap install packages with tag classic
+        become: true
+        snap: 
+            name: '{{ item }}'
+            classic: yes
+        loop:
+            - code
+            - flutter
 
     - block: 
       - name: Adding Teamviewer Repository
@@ -205,6 +219,17 @@
         become: true
         apt:
           name: teamviewer
+
+    - block: 
+      - name: Install Gnome-Tweak-Tool
+        become: true
+        apt:
+          name: gnome-tweak-tool          
+          
+      - name: Install Gnome-Tweaks
+        become: true
+        apt:
+          name: gnome-tweaks  
 
     - block:
       - name: Install Google Key
@@ -227,10 +252,10 @@
           name: google-chrome-stable
 
     - block:
-      - name: Installing Vagrant 2.2.18
+      - name: Installing Vagrant 2.2.19
         become: true
         unarchive:
-          src: 'https://releases.hashicorp.com/vagrant/2.2.18/vagrant_2.2.18_linux_amd64.zip'
+          src: 'https://releases.hashicorp.com/vagrant/2.2.19/vagrant_2.2.19_linux_amd64.zip'
           dest: /usr/local/bin
           remote_src: yes
 
@@ -282,18 +307,18 @@
         command: mv /usr/local/bin/terraform /usr/local/bin/terraform1
 
     - block:
-      - name: Installing Vault 1.8.1
+      - name: Installing Vault 1.11.2
         become: true
         unarchive:
-          src: 'https://releases.hashicorp.com/vault/1.8.1/vault_1.8.1_linux_amd64.zip'
+          src: 'https://releases.hashicorp.com/vault/1.11.2/vault_1.11.2_linux_amd64.zip'
           dest: /usr/local/bin
           remote_src: yes
 
     - block:
-      - name: Installing gomplate 3.9.0
+      - name: Installing gomplate 3.11.2
         become: true
         get_url:    
-          url: 'https://github.com/hairyhenderson/gomplate/releases/download/v3.9.0/gomplate_linux-amd64'
+          url: 'https://github.com/hairyhenderson/gomplate/releases/download/v3.11.2/gomplate_linux-amd64'
           dest: /usr/local/bin/gomplate
           mode: 755
 
@@ -374,10 +399,10 @@
           line: 'plugins=(git docker docker-compose)'
         
     - block:
-      - name: Installing Kubectl 1.22.0
+      - name: Installing Kubectl 1.24.0
         become: true
         get_url:    
-          url: 'https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl'
+          url: 'https://dl.k8s.io/release/v1.24.0/bin/linux/amd64/kubectl'
           dest: /usr/local/bin/kubectl
           mode: 755
       - name: Downloading Kubectx and Kubens 
@@ -415,8 +440,25 @@
         apt: 
           name: mainline 
 
+    - block:
+      - name: Adding CoreCtrl Repository
+        become: true
+        apt_repository: 
+          repo: 'ppa:ernstp/mesarc'
+          state: present
+      - name: Installing CoreCtrl
+        become: true
+        apt: 
+          name: corectrl
 
-# Optional installation
+    - block:
+      - name: Install a .deb package Insomnia
+        become: true
+        apt:
+          deb: https://updates.insomnia.rest/downloads/ubuntu/latest?&app=com.insomnia.app&source=website
+
+
+# # Optional installation
 
     # - block: 
     #   - name: Enable the 32-bit architecture to wine
