@@ -155,64 +155,54 @@
     - block:
       - name: flathub flatpak repo
         become: true
-        community.general.flatpak_remote:
+        flatpak_remote:
           name: flathub
           state: present
           flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
           method: system
 
       - name: Flatpak install package Figma
-        community.general.flatpak:
+        flatpak:
           name: io.github.Figma_Linux.figma_linux
           state: present
 
       - name: Flatpak install packages Gimp
-        community.general.flatpak:
+        flatpak:
           name: org.gimp.GIMP
           state: present      
           
       - name: Flatpak install package Mailspring
-        community.general.flatpak:
+        flatpak:
           name: com.getmailspring.Mailspring
           state: present      
           
       - name: Flatpak install package Teams
-        community.general.flatpak:
+        flatpak:
           name: com.microsoft.Teams
           state: present
 
       - name: Flatpak install package Obs-Studio
-        community.general.flatpak:
+        flatpak:
           name: com.obsproject.Studio
           state: present      
           
       - name: Flatpak install package VLC
-        community.general.flatpak:
+        flatpak:
           name: org.videolan.VLC
           state: present      
 
-      - name: Flatpak install package DataGrip
-        community.general.flatpak:
-          name: com.jetbrains.DataGrip
-          state: present       
-
       - name: Flatpak install package Android-Studio
-        community.general.flatpak:
+        flatpak:
           name: com.google.AndroidStudio
           state: present       
       
       - name: Flatpak install package Slack
-        community.general.flatpak:
+        flatpak:
           name: com.slack.Slack
           state: present         
-          
-      - name: Flatpak install package IntelliJ-Ultimate
-        community.general.flatpak:
-          name: com.jetbrains.IntelliJ-IDEA-Ultimate
-          state: present        
-          
+           
       - name: Flatpak install package Edge
-        community.general.flatpak:
+        flatpak:
           name: com.microsoft.Edge
           state: present        
     
@@ -235,6 +225,8 @@
         loop:
             - code
             - flutter
+            - intellij-idea-ultimate
+            - datagrip
 
     - block: 
       - name: Adding Teamviewer Repository
