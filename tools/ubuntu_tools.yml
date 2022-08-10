@@ -170,12 +170,7 @@
         flatpak:
           name: org.gimp.GIMP
           state: present      
-          
-      - name: Flatpak install package Mailspring
-        flatpak:
-          name: com.getmailspring.Mailspring
-          state: present      
-          
+           
       - name: Flatpak install package Teams
         flatpak:
           name: com.microsoft.Teams
@@ -216,6 +211,7 @@
             - notion-snap
             - postman
             - bpytop
+            - mailspring
 
       - name: Snap install packages with tag classic
         become: true
